@@ -59,6 +59,8 @@ func NewMasscanScannerWithBinaryPath(binaryPath string, options ...Options) (*Ma
 
 	masscanScanner.masscanPath = binaryPath
 
+	fmt.Println("masscan path : ", masscanScanner.masscanPath)
+
 	if masscanScanner.cxt == nil {
 		masscanScanner.cxt = context.Background()
 	}
@@ -111,17 +113,13 @@ func (m *MasscanScanner) Run() (result *MasscaRun, warnning []string, err error)
 			warnning = strings.Split(strings.Trim(stderr.String(), "\n"), "\n")
 		}
 
-		if stdout.Len() > 0 {
-			result, err := ParseXML(stdout.Bytes())
-			if err != nil {
-				warnning = append(warnning, err.Error())
-				return nil, warnning, MasscaScanResultParseError
-			}
-			return result, warnning, nil
+		result, err := ParseXML(stdout.Bytes())
+		if err != nil {
+			warnning = append(warnning, err.Error())
+			return nil, warnning, MasscaScanResultParseError
 		}
+		return result, warnning, nil
 	}
-
-	return nil, nil, nil
 }
 
 

@@ -26,11 +26,7 @@ func main() {
 	result, _, err := masscanScanner.Run()
 	if err != nil {
 		log.Fatalf("unable to run masscan scan: %v\n", err)
+		return
 	}
-
-	if result != nil {
-		for _, host := range result.Hosts {
-			fmt.Printf("address : %s\n address type : %s\n", host.Address.Addr, host.Address.AddrType)
-		}
-	}
+	fmt.Println(result)
 }

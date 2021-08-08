@@ -11,7 +11,7 @@ func main() {
 	cxt, cancel := context.WithTimeout(context.Background(), 5 * time.Minute)
 	defer cancel()
 
-	var path string = "/usr/local/masscan"
+	var path string = "/home/to/path/masscan/bin/masscan"
 
 	MasscaScanner, err := masscan.NewMasscanScannerWithBinaryPath(
 		path,
@@ -25,5 +25,12 @@ func main() {
 		fmt.Printf("error : %v\n", err)
 	}
 
-	MasscaScanner.Run()
+	result, _, err := MasscaScanner.Run()
+	if err != nil {
+		fmt.Printf("Can't run masscan : %+v\n", err.Error())
+		return
+	}
+
+	fmt.Println(result)
+
 }
