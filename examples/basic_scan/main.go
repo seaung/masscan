@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 	"github.com/seaung/masscan"
-	"time"
 	"log"
+	"time"
 )
 
 func main() {
-	cxt, cancel := context.WithTimeout(context.Background(), time.Minute * 5)
+	cxt, cancel := context.WithTimeout(context.Background(), time.Minute*5)
 	defer cancel()
 
 	masscanScanner, err := masscan.NewMasscanScanner(
@@ -28,5 +28,12 @@ func main() {
 		log.Fatalf("unable to run masscan scan: %v\n", err)
 		return
 	}
-	fmt.Println(result)
+
+	for _, host := range result.Hosts {
+		fmt.Printf("Address : %s - Address Type : %s\n", host.Address.Addr, host.Address.AddrType)
+
+		for _, port := range host.Ports {
+			fmt.Printf("Port : %s - State : %s - Protocol : %s\n", port.ID, port.State.State, port.Protocol)
+		}
+	}
 }

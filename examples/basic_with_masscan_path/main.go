@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	cxt, cancel := context.WithTimeout(context.Background(), 5 * time.Minute)
+	cxt, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 
 	var path string = "/home/to/path/masscan/bin/masscan"
@@ -31,6 +31,11 @@ func main() {
 		return
 	}
 
-	fmt.Println(result)
+	for _, host := range result.Hosts {
+		fmt.Printf("Address : %s - Address Type : %s\n", host.Address.Addr, host.Address.AddrType)
 
+		for _, port := range host.Ports {
+			fmt.Printf("Port : %s - State : %s - Protocol : %s\n", port.ID, port.State.State, port.Protocol)
+		}
+	}
 }

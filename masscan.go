@@ -1,8 +1,8 @@
 package masscan
 
 import (
-	"bytes"
 	"bufio"
+	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -122,13 +122,12 @@ func (m *MasscanScanner) Run() (result *MasscaRun, warnning []string, err error)
 	}
 }
 
-
-// anything on the command-line not prefixed with a '-' is assumed to be an IP address or range. 
-// There are three valid formats. The first is a single IPv4 address like "192.168.0.1". 
-// The second is a range like "10.0.0.1-10.0.0.100". 
-// The third is a CIDR address, like "0.0.0.0/0". 
-// At least one target must be specified. Multiple targets can be specified. 
-// This can be specified as multiple options separated by space, 
+// anything on the command-line not prefixed with a '-' is assumed to be an IP address or range.
+// There are three valid formats. The first is a single IPv4 address like "192.168.0.1".
+// The second is a range like "10.0.0.1-10.0.0.100".
+// The third is a CIDR address, like "0.0.0.0/0".
+// At least one target must be specified. Multiple targets can be specified.
+// This can be specified as multiple options separated by space,
 // or can be separated by a comma as a single option, such as 10.0.0.0/8,192.168.0.1.
 func WithTargets(targets ...string) Options {
 	return func(m *MasscanScanner) {
@@ -150,8 +149,8 @@ func WithPorts(ports ...string) Options {
 		}
 
 		if flags >= 0 {
-			portList = m.args[flags + 1] + "," + portList
-			m.args[flags + 1] = portList
+			portList = m.args[flags+1] + "," + portList
+			m.args[flags+1] = portList
 		} else {
 			m.args = append(m.args, "-p")
 			m.args = append(m.args, portList)
@@ -159,7 +158,7 @@ func WithPorts(ports ...string) Options {
 	}
 }
 
-// specifies that banners should be grabbed, like HTTP server versions, HTML title fields, and so forth. 
+// specifies that banners should be grabbed, like HTTP server versions, HTML title fields, and so forth.
 // Only a few protocols are supported.
 func WithBanners() Options {
 	return func(m *MasscanScanner) {
@@ -175,7 +174,7 @@ func WithRate(rate int) Options {
 	}
 }
 
-// indicates that the scan should include an ICMP echo request. 
+// indicates that the scan should include an ICMP echo request.
 func WithPingScan() Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--ping")

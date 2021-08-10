@@ -16,15 +16,18 @@ go get github.com/seaung/masscan
 
 ```
 
-note: You need to install masscan on your computer in advance, otherwise you can't use this library
+## Special Instructions
+
+> This library depends on masscan, so you need to install masscan in your system in advance. since the execution of masscan requires root permission, you must ensure that you have root permission
+
 
 ## Supported features
 
-- [ x ] Support some parameters of masscan scanner
+- [x] Support some parameters of masscan scanner
 
 ## TODO
 
-- [] Constantly improve this library
+- [  ] Constantly improve this library
 
 
 ## Simple example
@@ -60,12 +63,24 @@ func main() {
 		log.Fatalf("unable to run masscan scan: %v\n", err)
 		return
 	}
-	fmt.Println(result)
+
+	for _, host := range result.Hosts {
+		fmt.Printf("Address : %s - Address Type : %s\n", host.Address.Addr, host.Address.AddrType)
+
+		for _, port := range host.Ports {
+			fmt.Printf("Port : %s - State : %s - Protocol : %s\n", port.ID, port.State.State, port.Protocol)
+		}
+	}
 }
+
 ```
 
 ## The development soul comes from
 The development of this library is inspired by this library [Ullaakut/nmap](https://github1s.com/Ullaakut/nmap)
+
+## Reference
+
+[Masscan Github](https://github.com/robertdavidgraham/masscan)
 
 ---
 that's all

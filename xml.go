@@ -2,6 +2,8 @@ package masscan
 
 import (
 	"encoding/xml"
+	"strconv"
+	"time"
 )
 
 type MasscaRun struct {
@@ -11,7 +13,7 @@ type MasscaRun struct {
 	Version          string     `xml:"version,attr" json:"version"`
 	XmlOutputVersion string     `xml:"xmloutputversion,attr" json:"xml_output_version"`
 	ScanInfo         ScanInfo   `xml:"scaninfo" json:"scaninfo"`
-	Hosts            []Hosts      `xml:"host" json:"host"`
+	Hosts            []Hosts    `xml:"host" json:"host"`
 	Finished         Finished   `xml:"finished" json:"finished"`
 	HostRecord       HostRecord `xml:"hosts" json:"hosts"`
 	rawXML           []byte
@@ -23,12 +25,12 @@ type ScanInfo struct {
 }
 
 type Hosts struct {
-	EndTime string  `xml:"endtime,attr" json:"end_time"`
-	Address Address `xml:"address" json:"address"`
+	EndTime TimeStamp `xml:"endtime,attr" json:"end_time"`
+	Address Address   `xml:"address" json:"address"`
 	Ports   []Ports   `xml:"ports>port" json:"ports"`
 }
 
-type Ports []struct {
+type Ports struct {
 	ID       string `xml:"portid,attr" json:"port_id"`
 	Protocol string `xml:"protocol,attr" json:"protocol"`
 	State    State  `xml:"state" json:"state"`
@@ -39,10 +41,18 @@ type Address struct {
 	Addr     string `xml:"addr,attr" json:"addr"`
 }
 
+func (a Address) String() string {
+	return a.Addr
+}
+
 type State struct {
 	State     string `xml:"state,attr" json:"state"`
 	Reason    string `xml:"reason,attr" json:"reason"`
 	ReasonTTL string `xml:"reasonttl,attr" json:"reason_ttl"`
+}
+
+func (s State) Status() string {
+	return s.State
 }
 
 type HostRecord struct {
@@ -52,9 +62,36 @@ type HostRecord struct {
 }
 
 type Finished struct {
-	Elapsed string `xml:"elapsed,attr" json:"elapsed"`
-	Time    string `xml:"time,attr" json:"time"`
-	TimeStr string `xml:"timeStr,attr" json:"time_str"`
+	Elapsed string    `xml:"elapsed,attr" json:"elapsed"`
+	Time    string    `xml:"time,attr" json:"time"`
+	TimeStr TimeStamp `xml:"timeStr,attr" json:"time_str"`
+}
+
+type TimeStamp time.Time
+
+func (t *TimeStamp) ParseTime(s string) error {
+	timestamp, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		return err
+	}
+
+	*t = TimeStamp(time.Unix(timestamp, 0))
+	return nil
+}
+
+func (t TimeStamp) FormatTime() string {
+	return strconv.FormatInt(time.Time(t).Unix(), 10)
+}
+
+func (t TimeStamp) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
+	if time.Time(t).IsZero() {
+		return xml.Attr{}, nil
+	}
+	return xml.Attr{Name: name, Value: t.FormatTime()}, nil
+}
+
+func (t *TimeStamp) UnMarshalXMLAttr(attr xml.Attr) (err error) {
+	return t.ParseTime(attr.Value)
 }
 
 func ParseXML(content []byte) (*MasscaRun, error) {
