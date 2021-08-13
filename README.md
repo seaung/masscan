@@ -27,7 +27,7 @@ go get github.com/seaung/masscan
 
 ## TODO
 
-- [  ] Constantly improve this library
+- [ ] Constantly improve this library
 
 
 ## Simple example
@@ -74,6 +74,26 @@ func main() {
 }
 
 ```
+
+
+Program output
+
+
+```bash
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 22 - State : open - Protocol : tcp
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 80 - State : open - Protocol : tcp
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 3306 - State : open - Protocol : tcp
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 81 - State : open - Protocol : tcp
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 111 - State : open - Protocol : tcp
+Address : 192.168.7.180 - Address Type : ipv4
+Port : 389 - State : open - Protocol : tcp
+```
+
 
 ## The development soul comes from
 The development of this library is inspired by this library [Ullaakut/nmap](https://github1s.com/Ullaakut/nmap)

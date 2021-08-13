@@ -122,6 +122,53 @@ func (m *MasscanScanner) Run() (result *MasscaRun, warnning []string, err error)
 	}
 }
 
+func (m *MasscanScanner) RunAsync() error {
+	args := m.args
+
+	args = append(args, "-oX")
+	args = append(args, "-")
+
+	m.cmd = exec.Command(m.masscanPath, args...)
+
+	stderr, err := m.cmd.StderrPipe()
+
+	if err != nil {
+		return fmt.Errorf("unable to get error output from asynchronous masscan run: %v", err)
+	}
+
+	stdout, err := m.cmd.StdoutPipe()
+
+	if err != nil {
+		return fmt.Errorf("unable to get standard output from asynchronous nmap run: %v", err)
+	}
+
+	m.stdout = *bufio.NewScanner(stdout)
+	m.stderr = *bufio.NewScanner(stderr)
+
+	if err := m.cmd.Start(); err != nil {
+		return fmt.Errorf("unable to execute asynchronous nmap run: %v", err)
+	}
+
+	go func() {
+		<-m.cxt.Done()
+		_ = m.cmd.Process.Kill()
+	}()
+
+	return nil
+}
+
+func (m *MasscanScanner) Start() error {
+	return m.cmd.Wait()
+}
+
+func (m *MasscanScanner) GetStdout() bufio.Scanner {
+	return m.stdout
+}
+
+func (m *MasscanScanner) GetStderr() bufio.Scanner {
+	return m.stderr
+}
+
 // anything on the command-line not prefixed with a '-' is assumed to be an IP address or range.
 // There are three valid formats. The first is a single IPv4 address like "192.168.0.1".
 // The second is a range like "10.0.0.1-10.0.0.100".
@@ -251,5 +298,47 @@ func WithResumePreviousScan(resumeFile string) Options {
 func WithContext(cxt context.Context) Options {
 	return func(m *MasscanScanner) {
 		m.cxt = cxt
+	}
+}
+
+func WithAdapterIP(address string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--adapter-ip")
+		m.args = append(m.args, address)
+	}
+}
+
+func WithAdapterPort(port int) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--adapter-port")
+		m.args = append(m.args, fmt.Sprint(port))
+	}
+}
+
+func WithAdapterMAC(mac string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--adapter-mac")
+		m.args = append(m.args, mac)
+	}
+}
+
+func WithRouterMAC(mac string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--router-mac")
+		m.args = append(m.args, mac)
+	}
+}
+
+func WithUserAgent(ua string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--http-user-agent")
+		m.args = append(m.args, ua)
+	}
+}
+
+func WithWait(sec int) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, "--wait")
+		m.args = append(m.args, fmt.Sprint(sec))
 	}
 }

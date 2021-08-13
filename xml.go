@@ -19,15 +19,23 @@ type MasscaRun struct {
 	rawXML           []byte
 }
 
+func (m MasscaRun) String() string {
+	return formatter(m.Start)
+}
+
 type ScanInfo struct {
 	Type     string `xml:"type,attr" json:"type"`
 	Protocol string `xml:"protocol,attr" json:"protocol"`
 }
 
 type Hosts struct {
-	EndTime TimeStamp `xml:"endtime,attr" json:"end_time"`
-	Address Address   `xml:"address" json:"address"`
-	Ports   []Ports   `xml:"ports>port" json:"ports"`
+	EndTime string  `xml:"endtime,attr" json:"end_time"`
+	Address Address `xml:"address" json:"address"`
+	Ports   []Ports `xml:"ports>port" json:"ports"`
+}
+
+func (h Hosts) String() string {
+	return formatter(h.EndTime)
 }
 
 type Ports struct {
@@ -62,36 +70,18 @@ type HostRecord struct {
 }
 
 type Finished struct {
-	Elapsed string    `xml:"elapsed,attr" json:"elapsed"`
-	Time    string    `xml:"time,attr" json:"time"`
-	TimeStr TimeStamp `xml:"timeStr,attr" json:"time_str"`
+	Elapsed string `xml:"elapsed,attr" json:"elapsed"`
+	Time    string `xml:"time,attr" json:"time"`
+	TimeStr string `xml:"timeStr,attr" json:"time_str"`
 }
 
-type TimeStamp time.Time
-
-func (t *TimeStamp) ParseTime(s string) error {
-	timestamp, err := strconv.ParseInt(s, 10, 64)
-	if err != nil {
-		return err
-	}
-
-	*t = TimeStamp(time.Unix(timestamp, 0))
-	return nil
+func (f Finished) String() string {
+	return formatter(f.Time)
 }
 
-func (t TimeStamp) FormatTime() string {
-	return strconv.FormatInt(time.Time(t).Unix(), 10)
-}
-
-func (t TimeStamp) MarshalXMLAttr(name xml.Name) (xml.Attr, error) {
-	if time.Time(t).IsZero() {
-		return xml.Attr{}, nil
-	}
-	return xml.Attr{Name: name, Value: t.FormatTime()}, nil
-}
-
-func (t *TimeStamp) UnMarshalXMLAttr(attr xml.Attr) (err error) {
-	return t.ParseTime(attr.Value)
+func formatter(timeStr string) string {
+	tm, _ := strconv.ParseInt(timeStr, 0, 64)
+	return time.Unix(tm, 0).Format("2006-01-02 15:04:05")
 }
 
 func ParseXML(content []byte) (*MasscaRun, error) {
