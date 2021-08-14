@@ -302,9 +302,9 @@ func WithContext(cxt context.Context) Options {
 }
 
 /*
-send packets using this IP address. 
-If not specified, then the first IP address bound to the network interface will be used. 
-Instead of a single IP address, a range may be specified. 
+send packets using this IP address.
+If not specified, then the first IP address bound to the network interface will be used.
+Instead of a single IP address, a range may be specified.
 NOTE: The size of the range must be an even power of 2, such as 1, 2, 4, 8, 16, 1024 etc. addresses.
 */
 func WithAdapterIP(address string) Options {
@@ -315,11 +315,11 @@ func WithAdapterIP(address string) Options {
 }
 
 /*
-send packets using this port number as the source. 
-If not specified, a random port will be chosen in the range 40000 through 60000. 
-This port should be filtered by the host firewall (like iptables) to prevent 
-the host network stack from interfering with arriving packets. Instead of a single port, 
-a range can be specified, like 40000-40003. 
+send packets using this port number as the source.
+If not specified, a random port will be chosen in the range 40000 through 60000.
+This port should be filtered by the host firewall (like iptables) to prevent
+the host network stack from interfering with arriving packets. Instead of a single port,
+a range can be specified, like 40000-40003.
 NOTE: The size of the range must be an even power of 2, such as the example above that has a total of 4 addresses.
 */
 func WithAdapterPort(port int) Options {
@@ -330,7 +330,7 @@ func WithAdapterPort(port int) Options {
 }
 
 /*
-send packets using this as the source MAC address. 
+send packets using this as the source MAC address.
 If not specified, then the first MAC address bound to the network interface will be used.
 */
 func WithAdapterMAC(mac string) Options {
@@ -341,7 +341,7 @@ func WithAdapterMAC(mac string) Options {
 }
 
 /*
-send packets to this MAC address as the destination. 
+send packets to this MAC address as the destination.
 If not specified, then the gateway address of the network interface will be ARPed.
 */
 func WithRouterMAC(mac string) Options {
@@ -362,7 +362,7 @@ func WithUserAgent(ua string) Options {
 }
 
 /*
-specifies the number of seconds after transmit is done to wait for receiving packets before exiting the program. 
+specifies the number of seconds after transmit is done to wait for receiving packets before exiting the program.
 The default is 10 seconds. The string forever can be specified to never terminate.
 */
 func WithWait(sec int) Options {
