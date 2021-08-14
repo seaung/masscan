@@ -139,14 +139,14 @@ func (m *MasscanScanner) RunAsync() error {
 	stdout, err := m.cmd.StdoutPipe()
 
 	if err != nil {
-		return fmt.Errorf("unable to get standard output from asynchronous nmap run: %v", err)
+		return fmt.Errorf("unable to get standard output from asynchronous masscan run: %v", err)
 	}
 
 	m.stdout = *bufio.NewScanner(stdout)
 	m.stderr = *bufio.NewScanner(stderr)
 
 	if err := m.cmd.Start(); err != nil {
-		return fmt.Errorf("unable to execute asynchronous nmap run: %v", err)
+		return fmt.Errorf("unable to execute asynchronous masscan run: %v", err)
 	}
 
 	go func() {
@@ -301,6 +301,12 @@ func WithContext(cxt context.Context) Options {
 	}
 }
 
+/*
+send packets using this IP address. 
+If not specified, then the first IP address bound to the network interface will be used. 
+Instead of a single IP address, a range may be specified. 
+NOTE: The size of the range must be an even power of 2, such as 1, 2, 4, 8, 16, 1024 etc. addresses.
+*/
 func WithAdapterIP(address string) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--adapter-ip")
@@ -308,6 +314,14 @@ func WithAdapterIP(address string) Options {
 	}
 }
 
+/*
+send packets using this port number as the source. 
+If not specified, a random port will be chosen in the range 40000 through 60000. 
+This port should be filtered by the host firewall (like iptables) to prevent 
+the host network stack from interfering with arriving packets. Instead of a single port, 
+a range can be specified, like 40000-40003. 
+NOTE: The size of the range must be an even power of 2, such as the example above that has a total of 4 addresses.
+*/
 func WithAdapterPort(port int) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--adapter-port")
@@ -315,6 +329,10 @@ func WithAdapterPort(port int) Options {
 	}
 }
 
+/*
+send packets using this as the source MAC address. 
+If not specified, then the first MAC address bound to the network interface will be used.
+*/
 func WithAdapterMAC(mac string) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--adapter-mac")
@@ -322,6 +340,10 @@ func WithAdapterMAC(mac string) Options {
 	}
 }
 
+/*
+send packets to this MAC address as the destination. 
+If not specified, then the gateway address of the network interface will be ARPed.
+*/
 func WithRouterMAC(mac string) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--router-mac")
@@ -329,6 +351,9 @@ func WithRouterMAC(mac string) Options {
 	}
 }
 
+/*
+replaces the existing user-agent field with the indicated value when doing HTTP requests.
+*/
 func WithUserAgent(ua string) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--http-user-agent")
@@ -336,6 +361,10 @@ func WithUserAgent(ua string) Options {
 	}
 }
 
+/*
+specifies the number of seconds after transmit is done to wait for receiving packets before exiting the program. 
+The default is 10 seconds. The string forever can be specified to never terminate.
+*/
 func WithWait(sec int) Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--wait")
