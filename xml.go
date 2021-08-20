@@ -32,6 +32,7 @@ type Hosts struct {
 	EndTime string  `xml:"endtime,attr" json:"end_time"`
 	Address Address `xml:"address" json:"address"`
 	Ports   []Ports `xml:"ports>port" json:"ports"`
+	Service Service `xml:"service" json:"service"`
 }
 
 func (h Hosts) String() string {
@@ -61,6 +62,11 @@ type State struct {
 
 func (s State) Status() string {
 	return s.State
+}
+
+type Service struct {
+	Name   string `xml:"name,attr" json:"name"`
+	Banner string `xml:"banner,attr" json:"banner"`
 }
 
 type HostRecord struct {

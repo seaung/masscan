@@ -205,6 +205,25 @@ func WithPorts(ports ...string) Options {
 	}
 }
 
+/*
+Scan only UDP segments
+example:
+
+func main() {
+	...
+	masscan.WithUdpPorts(":9000,99999")
+	...
+
+	// or
+	masscan.WithUdpPorts(":22-11211")
+}
+*/
+func WithUdpPorts(ports string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, fmt.Sprintf("-p U%s", ports))
+	}
+}
+
 // specifies that banners should be grabbed, like HTTP server versions, HTML title fields, and so forth.
 // Only a few protocols are supported.
 func WithBanners() Options {
