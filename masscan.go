@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"os"
 	"os/exec"
 	"strings"
 )
@@ -38,28 +37,6 @@ func NewMasscanScanner(options ...Options) (*MasscanScanner, error) {
 			return nil, MasscanNotInstalledError
 		}
 	}
-
-	if masscanScanner.cxt == nil {
-		masscanScanner.cxt = context.Background()
-	}
-
-	return masscanScanner, nil
-}
-
-func NewMasscanScannerWithBinaryPath(binaryPath string, options ...Options) (*MasscanScanner, error) {
-	masscanScanner := &MasscanScanner{}
-
-	for _, option := range options {
-		option(masscanScanner)
-	}
-
-	if _, err := os.Stat(binaryPath); os.IsExist(err) {
-		return nil, MasscanNotFoundError
-	}
-
-	masscanScanner.masscanPath = binaryPath
-
-	fmt.Println("masscan path : ", masscanScanner.masscanPath)
 
 	if masscanScanner.cxt == nil {
 		masscanScanner.cxt = context.Background()
@@ -167,6 +144,12 @@ func (m *MasscanScanner) GetStdout() bufio.Scanner {
 
 func (m *MasscanScanner) GetStderr() bufio.Scanner {
 	return m.stderr
+}
+
+func WithMasscanBinaryPath(binPath string) Options {
+	return func(m *MasscanScanner) {
+		m.masscanPath = binPath
+	}
 }
 
 // anything on the command-line not prefixed with a '-' is assumed to be an IP address or range.
