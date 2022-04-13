@@ -152,6 +152,12 @@ func WithMasscanBinaryPath(binPath string) Options {
 	}
 }
 
+func WithCustomArguments(args ...string) Options {
+	return func(m *MasscanScanner) {
+		m.args = append(m.args, args...)
+	}
+}
+
 // anything on the command-line not prefixed with a '-' is assumed to be an IP address or range.
 // There are three valid formats. The first is a single IPv4 address like "192.168.0.1".
 // The second is a range like "10.0.0.1-10.0.0.100".
@@ -227,13 +233,6 @@ func WithRate(rate int) Options {
 func WithPingScan() Options {
 	return func(m *MasscanScanner) {
 		m.args = append(m.args, "--ping")
-	}
-}
-
-// list the available network interfaces, and then exits.
-func WithIfList() Options {
-	return func(m *MasscanScanner) {
-		m.args = append(m.args, "--iflist")
 	}
 }
 
